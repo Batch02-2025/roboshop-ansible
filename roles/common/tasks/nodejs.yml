@@ -1,0 +1,31 @@
+- name: Disable NodeJS Default Version
+  ansible.builtin.shell: sudo dnf module disable nodejs -y
+
+- name: Enable the NodeJS 20 Module
+  ansible.builtin.shell: sudo dnf module enable nodejs:20 -y
+
+- name: Install NodeJS
+  ansible.builtin.dnf:
+    name: nodejs
+    state: latest
+
+- name: Setup Application Prerequisities
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: app_prereq
+
+- name: Download NodeJS dependencies
+  ansible.builtin.shell: sudo npm install
+  args:
+    chdir: "{{app_path}}"
+
+- name: Load the Schema
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: schema
+  when: schema_setup is defined
+
+- name: SystemD Setup
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: systemd
