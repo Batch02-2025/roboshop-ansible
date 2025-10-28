@@ -1,0 +1,5 @@
+# Cart Configurations
+- name: Setup NodeJS 20
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: nodejs

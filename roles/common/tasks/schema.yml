@@ -12,5 +12,17 @@
         state: latest
 
     - name: Load the Master Data
-      ansible.builtin.shell: mongosh --host MONGODB-SERVER-IPADDRESS </app/db/{{item}}.js
+      ansible.builtin.shell: mongosh --host MONGODB-SERVER-IPADDRESS </app/db/{{ item }}.js
       loop: "{{schema_files}}"
+
+- name: Load Mysql Schema
+  when: schema_setup == "mysql"
+  block:
+    - name: Install mysql Client
+      ansible.builtin.dnf:
+        name: mysql
+        state: latest
+
+    - name: Load Master Data
+      ansible.builtin.shell: mysql -h <MYSQL-SERVER-IPADDRESS> -uroot -pRoboShop@1 < /app/db/{{ item }}.sql
+      loop: "{{ schema_files }}"

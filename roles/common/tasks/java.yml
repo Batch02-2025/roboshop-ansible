@@ -1,0 +1,25 @@
+# Java and Maven Configuration
+- name: Install Java >=1.8 and Maven >=3.5
+  ansible.builtin.dnf:
+    name: maven
+
+- name: Setup App Prerequisites
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: app-prereq
+
+- name: Download Dependencies
+  ansible.builtin.shell: mvn clean package ;mv target/{{ component }}-1.0.jar {{ component }}.jar
+  args:
+    chdir: "{{ app_path }}"
+
+- name: load Schema
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: schema
+  when: schema_setup is defined
+
+- name: SystemD services
+  ansible.builtin.include_role:
+    name: common
+    tasks_from: systemd
